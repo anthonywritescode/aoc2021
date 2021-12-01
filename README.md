@@ -25,4 +25,7 @@ maybe.
 
 ```console
 $ find -maxdepth 1 -type d -name 'day*' -not -name day00 | sort | xargs --replace bash -xc 'python {}/part1.py {}/input.txt; python {}/part2.py {}/input.txt'
++ python day01/part1.py input.txt
+1195
+> 1208 μs
 ```
