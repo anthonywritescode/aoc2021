@@ -40,4 +40,9 @@ $ find -maxdepth 1 -type d -name 'day*' -not -name day00 | sort | xargs --replac
 + python day03/part1.py input.txt
 3277364
 > 2797 μs
++ python day03/part2.py input.txt
+5736383
+> 7583 μs (haxy dicts)
+5736383
+> 2553 μs
 ```
