@@ -28,7 +28,7 @@ def compute(s: str) -> int:
 
         included = {pos for pos in included if column[pos] == path[-1]}
 
-    prefix1 = ''.join(path)
+    best = lines[next(iter(included))]
 
     path = []
     included = set(range(len(lines)))
@@ -42,10 +42,7 @@ def compute(s: str) -> int:
 
         included = {pos for pos in included if column[pos] == path[-1]}
 
-    prefix2 = ''.join(path)
-
-    best, = (line for line in lines if line.startswith(prefix1))
-    worst, = (line for line in lines if line.startswith(prefix2))
+    worst = lines[next(iter(included))]
 
     return int(best, 2) * int(worst, 2)
 
