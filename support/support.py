@@ -78,6 +78,7 @@ def download_input() -> int:
 TOO_QUICK = re.compile('You gave an answer too recently.*to wait.')
 WRONG = re.compile(r"That's not the right answer.*?\.")
 RIGHT = "That's the right answer!"
+ALREADY_DONE = re.compile(r"You don't seem to be solving.*\?")
 
 
 def submit_solution() -> int:
@@ -96,6 +97,8 @@ def submit_solution() -> int:
     day = int(day_s[len('day'):])
     answer = int(sys.stdin.read())
 
+    print(f'answer: {answer}')
+
     params = urllib.parse.urlencode({'level': args.part, 'answer': answer})
     req = urllib.request.Request(
         f'https://adventofcode.com/{year}/day/{day}/answer',
@@ -107,15 +110,11 @@ def submit_solution() -> int:
 
     contents = resp.read().decode()
 
-    wrong_match = WRONG.search(contents)
-    if wrong_match:
-        print(wrong_match[0])
-        return 1
-
-    too_quick_match = TOO_QUICK.search(contents)
-    if too_quick_match:
-        print(too_quick_match[0])
-        return 1
+    for error_regex in (WRONG, TOO_QUICK, ALREADY_DONE):
+        error_match = error_regex.search(contents)
+        if error_match:
+            print(error_match[0])
+            return 1
 
     if RIGHT in contents:
         print(RIGHT)
