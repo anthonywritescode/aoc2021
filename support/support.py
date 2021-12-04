@@ -3,8 +3,11 @@ from __future__ import annotations
 import argparse
 import contextlib
 import os.path
+import re
+import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from typing import Generator
 
@@ -25,15 +28,18 @@ def timing(name: str = '') -> Generator[None, None, None]:
             unit = 'μs'
         if name:
             name = f' ({name})'
-        print(f'> {int(t)} {unit}{name}')
+        print(f'> {int(t)} {unit}{name}', file=sys.stderr, flush=True)
+
+
+def _get_cookie_headers() -> dict[str, str]:
+    with open(os.path.join(HERE, '../.env')) as f:
+        contents = f.read().strip()
+    return {'Cookie': contents}
 
 
 def get_input(year: int, day: int) -> str:
-    with open(os.path.join(HERE, '../.env')) as f:
-        contents = f.read()
-
     url = f'https://adventofcode.com/{year}/day/{day}/input'
-    req = urllib.request.Request(url, headers={'Cookie': contents.strip()})
+    req = urllib.request.Request(url, headers=_get_cookie_headers())
     return urllib.request.urlopen(req).read().decode()
 
 
@@ -67,3 +73,54 @@ def download_input() -> int:
         print('...')
 
     return 0
+
+
+TOO_QUICK = re.compile('You gave an answer too recently.*to wait.')
+WRONG = re.compile(r"That's not the right answer.*?\.")
+RIGHT = "That's the right answer!"
+
+
+def submit_solution() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--part', type=int, required=True)
+    args = parser.parse_args()
+
+    cwd = os.getcwd()
+    day_s = os.path.basename(cwd)
+    year_s = os.path.basename(os.path.dirname(cwd))
+
+    if not day_s.startswith('day') or not year_s.startswith('aoc'):
+        raise AssertionError(f'unexpected working dir: {cwd}')
+
+    year = int(year_s[len('aoc'):])
+    day = int(day_s[len('day'):])
+    answer = int(sys.stdin.read())
+
+    params = urllib.parse.urlencode({'level': args.part, 'answer': answer})
+    req = urllib.request.Request(
+        f'https://adventofcode.com/{year}/day/{day}/answer',
+        method='POST',
+        data=params.encode(),
+        headers=_get_cookie_headers(),
+    )
+    resp = urllib.request.urlopen(req)
+
+    contents = resp.read().decode()
+
+    wrong_match = WRONG.search(contents)
+    if wrong_match:
+        print(wrong_match[0])
+        return 1
+
+    too_quick_match = TOO_QUICK.search(contents)
+    if too_quick_match:
+        print(too_quick_match[0])
+        return 1
+
+    if RIGHT in contents:
+        print(RIGHT)
+        return 0
+    else:
+        # unexpected output?
+        print(contents)
+        return 1
