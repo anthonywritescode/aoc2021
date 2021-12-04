@@ -12,24 +12,24 @@ INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
 
 
 class Board(NamedTuple):
-    called: dict[int, bool]
+    left: set[int]
     ints: list[int]
 
     @property
     def summed(self) -> int:
-        return sum(k for k, v in self.called.items() if not v)
+        return sum(self.left)
 
     @property
     def solved(self) -> bool:
         for i in range(5):
             for j in range(5):
-                if not self.called[self.ints[i * 5 + j]]:
+                if self.ints[i * 5 + j] in self.left:
                     break
             else:
                 return True
 
             for j in range(5):
-                if not self.called[self.ints[i + j * 5]]:
+                if self.ints[i + j * 5] in self.left:
                     break
             else:
                 return True
@@ -38,9 +38,8 @@ class Board(NamedTuple):
 
     @classmethod
     def parse(cls, board: str) -> Board:
-        called = {int(s): False for s in board.split()}
-        ints = list(called)
-        return cls(called, ints)
+        ints = [int(s) for s in board.split()]
+        return cls(set(ints), ints)
 
 
 def compute(s: str) -> int:
@@ -50,10 +49,9 @@ def compute(s: str) -> int:
 
     last_won = -1
     seen = set()
-    for number in [int(s) for s in first.split(',')]:
+    for number in (int(s) for s in first.split(',')):
         for board in boards:
-            if number in board.called:
-                board.called[number] = True
+            board.left.discard(number)
 
         for i, board in enumerate(boards):
             if i not in seen and board.solved:
