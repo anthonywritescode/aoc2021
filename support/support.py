@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import os.path
 import time
 import urllib.error
 import urllib.request
 from typing import Generator
+
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 @contextlib.contextmanager
@@ -26,7 +29,7 @@ def timing(name: str = '') -> Generator[None, None, None]:
 
 
 def get_input(year: int, day: int) -> str:
-    with open('../.env') as f:
+    with open(os.path.join(HERE, '../.env')) as f:
         contents = f.read()
 
     url = f'https://adventofcode.com/{year}/day/{day}/input'
