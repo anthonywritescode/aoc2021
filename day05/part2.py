@@ -19,21 +19,25 @@ def compute(s: str) -> int:
         x1, y1 = (int(s) for s in p1.split(','))
         x2, y2 = (int(s) for s in p2.split(','))
 
-        if x1 == x2:
-            for y in range(min(y1, y2), max(y1, y2) + 1):
-                positions[(x1, y)] += 1
-        elif y1 == y2:
-            for x in range(min(x1, x2), max(x1, x2) + 1):
-                positions[x, y1] += 1
+        if x2 > x1:
+            x_d = 1
+        elif x2 < x1:
+            x_d = -1
         else:
-            x_d = 1 if x2 > x1 else -1
-            y_d = 1 if y2 > y1 else -1
+            x_d = 0
 
-            x, y = x1, y1
-            while (x, y) != (x2, y2):
-                positions[(x, y)] += 1
-                x, y = x + x_d, y + y_d
-            positions[(x2, y2)] += 1
+        if y2 > y1:
+            y_d = 1
+        elif y2 < y1:
+            y_d = -1
+        else:
+            y_d = 0
+
+        x, y = x1, y1
+        while (x, y) != (x2, y2):
+            positions[(x, y)] += 1
+            x, y = x + x_d, y + y_d
+        positions[(x2, y2)] += 1
 
     n = 0
     for k, v in positions.most_common():
