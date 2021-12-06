@@ -74,7 +74,6 @@ AS (
             ELSE nn.co2_num * 2
         END
     FROM nn
-    WHERE nn.i < (SELECT line_len FROM vars)
+    WHERE nn.i < (SELECT line_len -1 FROM vars)
 )
-SELECT nn.o2_num * nn.co2_num FROM nn
-WHERE nn.i = (SELECT line_len - 1 FROM vars);
+SELECT nn.o2_num * nn.co2_num FROM nn ORDER BY nn.i DESC LIMIT 1;
