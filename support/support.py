@@ -113,11 +113,11 @@ def submit_solution() -> int:
     for error_regex in (WRONG, TOO_QUICK, ALREADY_DONE):
         error_match = error_regex.search(contents)
         if error_match:
-            print(error_match[0])
+            print(f'\033[41m{error_match[0]}\033[m')
             return 1
 
     if RIGHT in contents:
-        print(RIGHT)
+        print(f'\033[42m{RIGHT}\033[m')
         return 0
     else:
         # unexpected output?
