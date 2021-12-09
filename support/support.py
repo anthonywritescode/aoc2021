@@ -43,15 +43,26 @@ def get_input(year: int, day: int) -> str:
     return urllib.request.urlopen(req).read().decode()
 
 
+def get_year_day() -> tuple[int, int]:
+    cwd = os.getcwd()
+    day_s = os.path.basename(cwd)
+    year_s = os.path.basename(os.path.dirname(cwd))
+
+    if not day_s.startswith('day') or not year_s.startswith('aoc'):
+        raise AssertionError(f'unexpected working dir: {cwd}')
+
+    return int(year_s[len('aoc'):]), int(day_s[len('day'):])
+
+
 def download_input() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument('year', type=int)
-    parser.add_argument('day', type=int)
-    args = parser.parse_args()
+    parser.parse_args()
+
+    year, day = get_year_day()
 
     for i in range(5):
         try:
-            s = get_input(args.year, args.day)
+            s = get_input(year, day)
         except urllib.error.URLError as e:
             print(f'zzz: not ready yet: {e}')
             time.sleep(1)
@@ -86,15 +97,7 @@ def submit_solution() -> int:
     parser.add_argument('--part', type=int, required=True)
     args = parser.parse_args()
 
-    cwd = os.getcwd()
-    day_s = os.path.basename(cwd)
-    year_s = os.path.basename(os.path.dirname(cwd))
-
-    if not day_s.startswith('day') or not year_s.startswith('aoc'):
-        raise AssertionError(f'unexpected working dir: {cwd}')
-
-    year = int(year_s[len('aoc'):])
-    day = int(day_s[len('day'):])
+    year, day = get_year_day()
     answer = int(sys.stdin.read())
 
     print(f'answer: {answer}')
