@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import collections
 import os.path
 from typing import Generator
 
@@ -28,14 +27,14 @@ def compute(s: str) -> int:
 
     flashes = 0
     for _ in range(100):
-        todo: collections.deque[tuple[int, int]] = collections.deque()
+        todo = []
         for pt in coords:
             coords[pt] += 1
             if coords[pt] > 9:
                 todo.append(pt)
 
         while todo:
-            flashing = todo.popleft()
+            flashing = todo.pop()
             if coords[flashing] == 0:
                 continue
             coords[flashing] = 0
