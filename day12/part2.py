@@ -20,10 +20,9 @@ def compute(s: str) -> int:
 
     done = set()
 
-    todo: collections.deque[tuple[tuple[str, ...], bool]]
-    todo = collections.deque([(('start',), False)])
+    todo: list[tuple[tuple[str, ...], bool]] = [(('start',), False)]
     while todo:
-        path, double_small = todo.popleft()
+        path, double_small = todo.pop()
         if path[-1] == 'end':
             done.add(path)
             continue
