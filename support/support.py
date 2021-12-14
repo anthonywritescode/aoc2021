@@ -92,6 +92,19 @@ RIGHT = "That's the right answer!"
 ALREADY_DONE = re.compile(r"You don't seem to be solving.*\?")
 
 
+def _post_answer(year: int, day: int, part: int, answer: int) -> str:
+    params = urllib.parse.urlencode({'level': part, 'answer': answer})
+    req = urllib.request.Request(
+        f'https://adventofcode.com/{year}/day/{day}/answer',
+        method='POST',
+        data=params.encode(),
+        headers=_get_cookie_headers(),
+    )
+    resp = urllib.request.urlopen(req)
+
+    return resp.read().decode()
+
+
 def submit_solution() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--part', type=int, required=True)
@@ -102,16 +115,7 @@ def submit_solution() -> int:
 
     print(f'answer: {answer}')
 
-    params = urllib.parse.urlencode({'level': args.part, 'answer': answer})
-    req = urllib.request.Request(
-        f'https://adventofcode.com/{year}/day/{day}/answer',
-        method='POST',
-        data=params.encode(),
-        headers=_get_cookie_headers(),
-    )
-    resp = urllib.request.urlopen(req)
-
-    contents = resp.read().decode()
+    contents = _post_answer(year, day, args.part, answer)
 
     for error_regex in (WRONG, TOO_QUICK, ALREADY_DONE):
         error_match = error_regex.search(contents)
@@ -124,5 +128,22 @@ def submit_solution() -> int:
         return 0
     else:
         # unexpected output?
+        print(contents)
+        return 1
+
+
+def submit_25_pt2() -> int:
+    parser = argparse.ArgumentParser()
+    parser.parse_args()
+
+    year, day = get_year_day()
+
+    assert day == 25, day
+    contents = _post_answer(year, day, part=2, answer=0)
+
+    if 'Congratulations!' in contents:
+        print('\033[42mCongratulations!\033[m')
+        return 0
+    else:
         print(contents)
         return 1
