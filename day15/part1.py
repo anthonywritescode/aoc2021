@@ -27,7 +27,6 @@ def compute(s: str) -> int:
 
     last_x, last_y = max(coords)
 
-    best = None
     best_at: dict[tuple[int, int], int] = {}
 
     todo = [(0, (0, 0))]
@@ -39,11 +38,8 @@ def compute(s: str) -> int:
         else:
             best_at[last_coord] = cost
 
-        if best is not None and cost >= best:
-            continue
-        elif last_coord == (last_x, last_y):
-            best = cost
-            continue
+        if last_coord == (last_x, last_y):
+            return cost
 
         for cand in next_p(*last_coord):
             if cand in coords:
