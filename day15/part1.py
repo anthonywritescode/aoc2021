@@ -43,7 +43,7 @@ def compute(s: str) -> int:
 
         for cand in next_p(*last_coord):
             if cand in coords:
-                todo.append((cost + coords[cand], cand))
+                heapq.heappush(todo, (cost + coords[cand], cand))
 
     return best_at[(last_x, last_y)]
 
