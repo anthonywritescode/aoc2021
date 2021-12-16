@@ -36,31 +36,31 @@ def compute(s: str) -> int:
         bin_str += f'{int(c, 16):04b}'
 
     def parse_packet(i: int) -> tuple[int, _Packet]:
-        version_id = int(bin_str[i:i + 3], 2)
-        i += 3
-        type_id = int(bin_str[i:i + 3], 2)
-        i += 3
+        def _read(n: int) -> int:
+            nonlocal i
+            ret = int(bin_str[i:i + n], 2)
+            i += n
+            return ret
+
+        version = _read(3)
+        type_id = _read(3)
 
         if type_id == 4:
             n = 0
             # literal
-            chunk = bin_str[i:i + 5]
-            i += 5
-            n += int(chunk[1:], 2)
-            while chunk[0] == '1':
-                chunk = bin_str[i:i + 5]
-                i += 5
+            chunk = _read(5)
+            n += chunk & 0b1111
+            while chunk & 0b10000:
+                chunk = _read(5)
                 n <<= 4
-                n += int(chunk[1:], 2)
+                n += chunk & 0b1111
 
-            return i, Packet(version=version_id, type_id=type_id, n=n)
+            return i, Packet(version=version, type_id=type_id, n=n)
         else:
-            mode = int(bin_str[i], 2)
-            i += 1
+            mode = _read(1)
 
             if mode == 0:
-                bits_length = int(bin_str[i:i + 15], 2)
-                i += 15
+                bits_length = _read(15)
                 j = i
                 i = i + bits_length
                 packets = []
@@ -69,20 +69,19 @@ def compute(s: str) -> int:
                     packets.append(packet)
 
                 ret = Packet(
-                    version=version_id,
+                    version=version,
                     type_id=type_id,
                     packets=tuple(packets),
                 )
                 return i, ret
             else:
-                sub_packets = int(bin_str[i:i + 11], 2)
-                i += 11
+                sub_packets = _read(11)
                 packets = []
                 for _ in range(sub_packets):
                     i, packet = parse_packet(i)
                     packets.append(packet)
                 ret = Packet(
-                    version=version_id,
+                    version=version,
                     type_id=type_id,
                     packets=tuple(packets),
                 )
