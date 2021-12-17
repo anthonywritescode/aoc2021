@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import enum
 import os.path
 import re
 import sys
@@ -205,3 +206,32 @@ def format_coords_hash(coords: set[tuple[int, int]]) -> str:
 
 def print_coords_hash(coords: set[tuple[int, int]]) -> None:
     print(format_coords_hash(coords))
+
+
+class Direction4(enum.Enum):
+    UP = (0, -1)
+    RIGHT = (1, 0)
+    DOWN = (0, 1)
+    LEFT = (-1, 0)
+
+    @property
+    def _vals(self) -> tuple[Direction4, ...]:
+        return tuple(type(self).__members__.values())
+
+    @property
+    def cw(self) -> Direction4:
+        vals = self._vals
+        return vals[(vals.index(self) + 1) % len(vals)]
+
+    @property
+    def ccw(self) -> Direction4:
+        vals = self._vals
+        return vals[(vals.index(self) - 1) % len(vals)]
+
+    @property
+    def opposite(self) -> Direction4:
+        vals = self._vals
+        return vals[(vals.index(self) + 2) % len(vals)]
+
+    def apply(self, x: int, y: int) -> tuple[int, int]:
+        return self.value[0] + x, self.value[1] + y

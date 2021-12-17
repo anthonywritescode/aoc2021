@@ -46,3 +46,10 @@ def test_parse_numbers_comma() -> None:
 
 def test_format_coords_hash() -> None:
     assert support.format_coords_hash({(1, 0), (0, 1)}) == ' #\n# '
+
+
+def test_direction4() -> None:
+    assert support.Direction4.UP.cw is support.Direction4.RIGHT
+    assert support.Direction4.UP.ccw is support.Direction4.LEFT
+    assert support.Direction4.UP.opposite is support.Direction4.DOWN
+    assert support.Direction4.UP.apply(0, 0) == (0, -1)
