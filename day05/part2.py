@@ -6,7 +6,7 @@ import os.path
 
 import pytest
 
-from support import timing
+import support
 
 INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
 
@@ -16,8 +16,8 @@ def compute(s: str) -> int:
     lines = s.splitlines()
     for line in lines:
         p1, p2 = line.split(' -> ')
-        x1, y1 = (int(s) for s in p1.split(','))
-        x2, y2 = (int(s) for s in p2.split(','))
+        x1, y1 = support.parse_numbers_comma(p1)
+        x2, y2 = support.parse_numbers_comma(p2)
 
         if x2 > x1:
             x_d = 1
@@ -78,7 +78,7 @@ def main() -> int:
     parser.add_argument('data_file', nargs='?', default=INPUT_TXT)
     args = parser.parse_args()
 
-    with open(args.data_file) as f, timing():
+    with open(args.data_file) as f, support.timing():
         print(compute(f.read()))
 
     return 0

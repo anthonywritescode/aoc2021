@@ -6,13 +6,13 @@ import os.path
 
 import pytest
 
-from support import timing
+import support
 
 INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
 
 
 def compute(s: str) -> int:
-    numbers = collections.Counter(int(line) for line in s.strip().split(','))
+    numbers = collections.Counter(support.parse_numbers_comma(s))
 
     for d in range(256):
         numbers2 = collections.Counter({8: numbers[0], 6: numbers[0]})
@@ -43,7 +43,7 @@ def main() -> int:
     parser.add_argument('data_file', nargs='?', default=INPUT_TXT)
     args = parser.parse_args()
 
-    with open(args.data_file) as f, timing():
+    with open(args.data_file) as f, support.timing():
         print(compute(f.read()))
 
     return 0

@@ -147,3 +147,61 @@ def submit_25_pt2() -> int:
     else:
         print(contents)
         return 1
+
+
+def adjacent_4(x: int, y: int) -> Generator[tuple[int, int], None, None]:
+    yield x, y - 1
+    yield x + 1, y
+    yield x, y + 1
+    yield x - 1, y
+
+
+def adjacent_8(x: int, y: int) -> Generator[tuple[int, int], None, None]:
+    for y_d in (-1, 0, 1):
+        for x_d in (-1, 0, 1):
+            if y_d == x_d == 0:
+                continue
+            yield x + x_d, y + y_d
+
+
+def parse_coords_int(s: str) -> dict[tuple[int, int], int]:
+    coords = {}
+    for y, line in enumerate(s.splitlines()):
+        for x, c in enumerate(line):
+            coords[(x, y)] = int(c)
+    return coords
+
+
+def parse_coords_hash(s: str) -> set[tuple[int, int]]:
+    coords = set()
+    for y, line in enumerate(s.splitlines()):
+        for x, c in enumerate(line):
+            if c == '#':
+                coords.add((x, y))
+    return coords
+
+
+def parse_numbers_split(s: str) -> list[int]:
+    return [int(x) for x in s.split()]
+
+
+def parse_numbers_comma(s: str) -> list[int]:
+    return [int(x) for x in s.strip().split(',')]
+
+
+def format_coords_hash(coords: set[tuple[int, int]]) -> str:
+    min_x = min(x for x, _ in coords)
+    max_x = max(x for x, _ in coords)
+    min_y = min(y for _, y in coords)
+    max_y = max(y for _, y in coords)
+    return '\n'.join(
+        ''.join(
+            '#' if (x, y) in coords else ' '
+            for x in range(min_x, max_x + 1)
+        )
+        for y in range(min_y, max_y + 1)
+    )
+
+
+def print_coords_hash(coords: set[tuple[int, int]]) -> None:
+    print(format_coords_hash(coords))

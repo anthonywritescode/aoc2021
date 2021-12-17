@@ -2,28 +2,16 @@ from __future__ import annotations
 
 import argparse
 import os.path
-from typing import Generator
 
 import pytest
 
-from support import timing
+import support
 
 INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
 
 
-def adjacent(x: int, y: int) -> Generator[tuple[int, int], None, None]:
-    for x_d in (-1, 0, 1):
-        for y_d in (-1, 0, 1):
-            if x_d == y_d == 0:
-                continue
-            yield x + x_d, y + y_d
-
-
 def compute(s: str) -> int:
-    coords = {}
-    for y, line in enumerate(s.splitlines()):
-        for x, c in enumerate(line):
-            coords[(x, y)] = int(c)
+    coords = support.parse_coords_int(s)
 
     flashes = 0
     for _ in range(100):
@@ -39,7 +27,7 @@ def compute(s: str) -> int:
                 continue
             coords[flashing] = 0
             flashes += 1
-            for pt in adjacent(*flashing):
+            for pt in support.adjacent_8(*flashing):
                 if pt in coords and coords[pt] != 0:
                     coords[pt] += 1
                     if coords[pt] > 9:
@@ -78,7 +66,7 @@ def main() -> int:
     parser.add_argument('data_file', nargs='?', default=INPUT_TXT)
     args = parser.parse_args()
 
-    with open(args.data_file) as f, timing():
+    with open(args.data_file) as f, support.timing():
         print(compute(f.read()))
 
     return 0

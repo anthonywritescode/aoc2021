@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from support import timing
+import support
 
 INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
 
@@ -130,10 +130,10 @@ def main() -> int:
     parser.add_argument('data_file', nargs='?', default=INPUT_TXT)
     args = parser.parse_args()
 
-    with open(args.data_file) as f, timing('haxy dicts'):
+    with open(args.data_file) as f, support.timing('haxy dicts'):
         print(compute_haxy_dicts(f.read()))
 
-    with open(args.data_file) as f, timing():
+    with open(args.data_file) as f, support.timing():
         print(compute(f.read()))
 
     return 0

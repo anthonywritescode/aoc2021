@@ -7,27 +7,18 @@ import sys
 
 import pytest
 
-from support import timing
+import support
 
 INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
 
 
 def compute(s: str) -> int:
-    coords = collections.defaultdict(lambda: sys.maxsize)
-
-    lines = s.splitlines()
-    for y, line in enumerate(lines):
-        for x, c in enumerate(line):
-            coords[(y, x)] = int(c)
+    coords = support.parse_coords_int(s)
+    coords = collections.defaultdict(lambda: sys.maxsize, coords)
 
     total = 0
-    for (y, x), n in tuple(coords.items()):
-        if (
-            coords[y, x + 1] > n and
-            coords[y, x - 1] > n and
-            coords[y + 1, x] > n and
-            coords[y - 1, x] > n
-        ):
+    for (x, y), n in tuple(coords.items()):
+        if all(coords[pt] > n for pt in support.adjacent_4(x, y)):
             total += n + 1
 
     return total
@@ -58,7 +49,7 @@ def main() -> int:
     parser.add_argument('data_file', nargs='?', default=INPUT_TXT)
     args = parser.parse_args()
 
-    with open(args.data_file) as f, timing():
+    with open(args.data_file) as f, support.timing():
         print(compute(f.read()))
 
     return 0

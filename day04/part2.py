@@ -6,7 +6,7 @@ from typing import NamedTuple
 
 import pytest
 
-from support import timing
+import support
 
 INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
 
@@ -49,7 +49,7 @@ def compute(s: str) -> int:
 
     last_won = -1
     seen = set()
-    for number in (int(s) for s in first.split(',')):
+    for number in support.parse_numbers_comma(first):
         for board in boards:
             board.left.discard(number)
 
@@ -99,7 +99,7 @@ def main() -> int:
     parser.add_argument('data_file', nargs='?', default=INPUT_TXT)
     args = parser.parse_args()
 
-    with open(args.data_file) as f, timing():
+    with open(args.data_file) as f, support.timing():
         print(compute(f.read()))
 
     return 0

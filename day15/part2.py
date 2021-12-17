@@ -3,20 +3,12 @@ from __future__ import annotations
 import argparse
 import heapq
 import os.path
-from typing import Generator
 
 import pytest
 
-from support import timing
+import support
 
 INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
-
-
-def next_p(x: int, y: int) -> Generator[tuple[int, int], None, None]:
-    yield x - 1, y
-    yield x, y - 1
-    yield x + 1, y
-    yield x, y + 1
 
 
 def weird_mod(n: int) -> int:
@@ -26,20 +18,18 @@ def weird_mod(n: int) -> int:
 
 
 def compute(s: str) -> int:
-    coords = {}
-    lines = s.splitlines()
-    width = len(lines[0])
-    height = len(lines)
+    coords = support.parse_coords_int(s)
+    width, height = max(coords)
+    width, height = width + 1, height + 1
 
-    for y, line in enumerate(s.splitlines()):
-        for x, c in enumerate(line):
-            for y_i in range(5):
-                for x_i in range(5):
-                    coords[(x_i * height + x, y_i * width + y)] = (
-                        weird_mod(int(c) + x_i + y_i)
-                    )
+    coords = {
+        (x_i * width + x, y_i * height + y): weird_mod(n + x_i + y_i)
+        for (x, y), n in tuple(coords.items())
+        for y_i in range(5)
+        for x_i in range(5)
+    }
 
-    last_x, last_y = max(coords)
+    end = max(coords)
 
     best_at: dict[tuple[int, int], int] = {}
 
@@ -52,10 +42,10 @@ def compute(s: str) -> int:
         else:
             best_at[last_coord] = cost
 
-        if last_coord == (last_x, last_y):
+        if last_coord == end:
             return cost
 
-        for cand in next_p(*last_coord):
+        for cand in support.adjacent_4(*last_coord):
             if cand in coords:
                 heapq.heappush(todo, (cost + coords[cand], cand))
 
@@ -92,7 +82,7 @@ def main() -> int:
     parser.add_argument('data_file', nargs='?', default=INPUT_TXT)
     args = parser.parse_args()
 
-    with open(args.data_file) as f, timing():
+    with open(args.data_file) as f, support.timing():
         print(compute(f.read()))
 
     return 0

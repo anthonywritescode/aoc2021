@@ -5,7 +5,7 @@ import os.path
 
 import pytest
 
-from support import timing
+import support
 
 INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
 
@@ -16,8 +16,8 @@ def compute(s: str) -> str:
     points, instructions = s.split('\n\n')
 
     for line in points.splitlines():
-        x_s, y_s = line.split(',')
-        coords.add((int(x_s), int(y_s)))
+        x, y = support.parse_numbers_comma(line)
+        coords.add((x, y))
 
     for line in instructions.splitlines():
         start, end = line.split('=')
@@ -41,16 +41,7 @@ def compute(s: str) -> str:
                 for x, y in coords
             }
 
-    max_x = max(x for x, _ in coords)
-    max_y = max(y for _, y in coords)
-
-    return '\n'.join(
-        ''.join(
-            '#' if (x, y) in coords else ' '
-            for x in range(0, max_x + 1)
-        )
-        for y in range(0, max_y + 1)
-    )
+    return support.format_coords_hash(coords)
 
 
 INPUT_S = '''\
@@ -100,7 +91,7 @@ def main() -> int:
     parser.add_argument('data_file', nargs='?', default=INPUT_TXT)
     args = parser.parse_args()
 
-    with open(args.data_file) as f, timing():
+    with open(args.data_file) as f, support.timing():
         print(compute(f.read()))
 
     return 0
