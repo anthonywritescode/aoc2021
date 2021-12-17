@@ -46,10 +46,8 @@ def compute(s: str) -> int:
         type_id = _read(3)
 
         if type_id == 4:
-            n = 0
-            # literal
             chunk = _read(5)
-            n += chunk & 0b1111
+            n = chunk & 0b1111
             while chunk & 0b10000:
                 chunk = _read(5)
                 n <<= 4
