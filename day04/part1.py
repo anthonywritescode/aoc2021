@@ -38,7 +38,7 @@ class Board(NamedTuple):
 
     @classmethod
     def parse(cls, board: str) -> Board:
-        ints = [int(s) for s in board.split()]
+        ints = support.parse_numbers_split(board)
         return cls(set(ints), ints)
 
 
