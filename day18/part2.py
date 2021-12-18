@@ -74,7 +74,7 @@ def compute(s: str) -> int:
 
     maximum = 0
     for i, line in enumerate(lines):
-        for j, other in enumerate(lines[i + 1:], start=i + 1):
+        for other in lines[i + 1:]:
             maximum = max(
                 maximum,
                 compute_sum(reduce_number(add_number(line, other))),
