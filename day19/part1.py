@@ -103,7 +103,6 @@ def compute(s: str) -> int:
     todo = [scanners_by_id.pop(0)]
     while todo:
         src = todo.pop()
-        src_x, src_y, src_z = scanner_positions[src.sid]
 
         x_edges = x_edges_from(src, scanners_by_id)
         y_edges, z_edges = yz_edges_from(src, x_edges, scanners_by_id)
@@ -115,17 +114,18 @@ def compute(s: str) -> int:
 
             scanner_positions[k] = (dst_x, dst_y, dst_z)
 
-            scanners_by_id[k].points[:] = [
+            next_scanner = scanners_by_id.pop(k)
+            next_scanner.points[:] = [
                 (
                     dst_x + x_edges[k].sign * pt[x_edges[k].axis],
                     dst_y + y_edges[k].sign * pt[y_edges[k].axis],
                     dst_z + z_edges[k].sign * pt[z_edges[k].axis],
                 )
-                for pt in scanners_by_id[k].points
+                for pt in next_scanner.points
             ]
-            all_points.update(scanners_by_id[k].points)
+            all_points.update(next_scanner.points)
 
-            todo.append(scanners_by_id.pop(k))
+            todo.append(next_scanner)
 
     return len(all_points)
 
