@@ -98,7 +98,7 @@ def compute(s: str) -> int:
     scanners = [Scanner.from_str(part) for part in s.split('\n\n')]
     scanners_by_id = {scanner.sid: scanner for scanner in scanners}
     scanner_positions = {0: (0, 0, 0)}
-    all_points = set(scanners.pop(0).points)
+    all_points = set(scanners_by_id[0].points)
 
     todo = [scanners_by_id.pop(0)]
     while todo:
