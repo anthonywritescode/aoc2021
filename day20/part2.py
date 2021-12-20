@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import collections
-import functools
 import os.path
 
 import pytest
@@ -35,27 +34,34 @@ def compute(s: str) -> int:
         dict.fromkeys(part2_coords_s, 1),
     )
 
-    for i in range(50):
-        minx = min(x for x, _ in part2_coords_d)
-        maxx = max(x for x, _ in part2_coords_d)
-        miny = min(y for _, y in part2_coords_d)
-        maxy = max(y for _, y in part2_coords_d)
+    invert = int(part1[0] == 1 and part1[511] == 0)
 
-        if part1[0] == 1 and part1[511] == 0:
-            new_coords: collections.defaultdict[tuple[int, int], int]
-            new_coords = collections.defaultdict(
-                functools.partial(lambda q: int(q % 2 == 0), q=i),
-            )
-        else:
-            new_coords = collections.defaultdict(int)
-        for y in range(miny - 1, maxy + 2):
-            for x in range(minx - 1, maxx + 2):
-                if part1[to_int(part2_coords_d, x, y)]:
-                    new_coords[(x, y)] = 1
-                else:
-                    new_coords[(x, y)] = 0
+    minx = min(x for x, _ in part2_coords_d)
+    maxx = max(x for x, _ in part2_coords_d)
+    miny = min(y for _, y in part2_coords_d)
+    maxy = max(y for _, y in part2_coords_d)
 
-        part2_coords_d = new_coords
+    for _ in range(25):
+        coords1 = collections.defaultdict(
+            lambda: invert,
+            {
+                (x, y): part1[to_int(part2_coords_d, x, y)]
+                for y in range(miny - 1, maxy + 2)
+                for x in range(minx - 1, maxx + 2)
+            },
+        )
+        part2_coords_d = collections.defaultdict(
+            int,
+            {
+                (x, y): part1[to_int(coords1, x, y)]
+                for y in range(miny - 2, maxy + 3)
+                for x in range(minx - 2, maxx + 3)
+            },
+        )
+        minx -= 2
+        miny -= 2
+        maxx += 2
+        maxy += 2
 
     return sum(part2_coords_d.values())
 
