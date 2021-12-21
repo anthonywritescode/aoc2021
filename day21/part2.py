@@ -30,48 +30,26 @@ def compute(s: str) -> int:
             p1_score: int,
             p2_pos: int,
             p2_score: int,
-            p1_turn: bool,
     ) -> tuple[int, int]:
-        if p1_turn:
-            p1_wins = p2_wins = 0
-            for i, j, k in itertools.product((1, 2, 3), (1, 2, 3), (1, 2, 3)):
-                new_p1_pos = weird_mod(p1_pos + i + j + k)
-                new_p1_score = p1_score + new_p1_pos
-                if new_p1_score >= 21:
-                    p1_wins += 1
-                else:
-                    tmp_p1_wins, tmp_p2_wins = compute_win_count(
-                        new_p1_pos,
-                        new_p1_score,
-                        p2_pos,
-                        p2_score,
-                        p1_turn=False,
-                    )
-                    p1_wins += tmp_p1_wins
-                    p2_wins += tmp_p2_wins
+        p1_wins = p2_wins = 0
+        for i, j, k in itertools.product((1, 2, 3), (1, 2, 3), (1, 2, 3)):
+            new_p1_pos = weird_mod(p1_pos + i + j + k)
+            new_p1_score = p1_score + new_p1_pos
+            if new_p1_score >= 21:
+                p1_wins += 1
+            else:
+                tmp_p2_wins, tmp_p1_wins = compute_win_count(
+                    p2_pos,
+                    p2_score,
+                    new_p1_pos,
+                    new_p1_score,
+                )
+                p1_wins += tmp_p1_wins
+                p2_wins += tmp_p2_wins
 
-            return p1_wins, p2_wins
-        else:
-            p1_wins = p2_wins = 0
-            for i, j, k in itertools.product((1, 2, 3), (1, 2, 3), (1, 2, 3)):
-                new_p2_pos = weird_mod(p2_pos + i + j + k)
-                new_p2_score = p2_score + new_p2_pos
-                if new_p2_score >= 21:
-                    p2_wins += 1
-                else:
-                    tmp_p1_wins, tmp_p2_wins = compute_win_count(
-                        p1_pos,
-                        p1_score,
-                        new_p2_pos,
-                        new_p2_score,
-                        p1_turn=True,
-                    )
-                    p1_wins += tmp_p1_wins
-                    p2_wins += tmp_p2_wins
+        return p1_wins, p2_wins
 
-            return p1_wins, p2_wins
-
-    p1_win, p2_win = compute_win_count(p1, 0, p2, 0, p1_turn=True)
+    p1_win, p2_win = compute_win_count(p1, 0, p2, 0)
     return max(p1_win, p2_win)
 
 
