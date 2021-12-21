@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import collections
 import functools
-import itertools
 import os.path
 
 import pytest
@@ -24,6 +24,11 @@ def compute(s: str) -> int:
     _, _, _, _, p1_s = lines[1].split()
     p1, p2 = int(p0_s), int(p1_s)
 
+    # when rolling 3 dice they overlap
+    die_rolls = collections.Counter(
+        i + j + k for i in (1, 2, 3) for j in (1, 2, 3) for k in (1, 2, 3)
+    )
+
     @functools.lru_cache(maxsize=None)
     def compute_win_count(
             p1_pos: int,
@@ -32,11 +37,11 @@ def compute(s: str) -> int:
             p2_score: int,
     ) -> tuple[int, int]:
         p1_wins = p2_wins = 0
-        for i, j, k in itertools.product((1, 2, 3), (1, 2, 3), (1, 2, 3)):
-            new_p1_pos = weird_mod(p1_pos + i + j + k)
+        for k, ct in die_rolls.items():
+            new_p1_pos = weird_mod(p1_pos + k)
             new_p1_score = p1_score + new_p1_pos
             if new_p1_score >= 21:
-                p1_wins += 1
+                p1_wins += ct
             else:
                 tmp_p2_wins, tmp_p1_wins = compute_win_count(
                     p2_pos,
@@ -44,8 +49,8 @@ def compute(s: str) -> int:
                     new_p1_pos,
                     new_p1_score,
                 )
-                p1_wins += tmp_p1_wins
-                p2_wins += tmp_p2_wins
+                p1_wins += tmp_p1_wins * ct
+                p2_wins += tmp_p2_wins * ct
 
         return p1_wins, p2_wins
 
