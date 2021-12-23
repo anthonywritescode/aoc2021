@@ -142,17 +142,17 @@ def next_states(
 def compute(s: str) -> int:
     initial = State.parse(s)
 
-    best_at: dict[State, int] = {}
+    seen = set()
     todo = [(0, initial)]
     while todo:
         score, state = heapq.heappop(todo)
 
-        best_score = best_at.setdefault(state, score)
-        if best_score < score:
-            continue
-
         if state.completed:
             return score
+        elif state in seen:
+            continue
+        else:
+            seen.add(state)
 
         for tp in next_states(score, state):
             heapq.heappush(todo, tp)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import heapq
 import os.path
 from typing import Generator
 from typing import NamedTuple
@@ -221,29 +222,22 @@ def next_states(
 def compute(s: str) -> int:
     initial = State.parse(s)
 
-    best = None
-    best_at: dict[State, int] = {}
+    seen = set()
     todo = [(0, initial)]
     while todo:
-        score, state = todo.pop()
-
-        if best is not None and score >= best:
-            continue
-
-        best_score = best_at.setdefault(state, score)
-        if best_score < score:
-            continue
+        score, state = heapq.heappop(todo)
 
         if state.completed:
-            best = score
-            print(f'completed! {score}')
+            return score
+        elif state in seen:
             continue
+        else:
+            seen.add(state)
 
         for tp in next_states(score, state):
-            todo.append(tp)
+            heapq.heappush(todo, tp)
 
-    assert best is not None
-    return best
+    raise AssertionError('unreachable')
 
 
 INPUT_S = '''\

@@ -31,19 +31,17 @@ def compute(s: str) -> int:
 
     end = max(coords)
 
-    best_at: dict[tuple[int, int], int] = {}
-
+    seen = set()
     todo = [(0, (0, 0))]
     while todo:
         cost, last_coord = heapq.heappop(todo)
 
-        if last_coord in best_at and cost >= best_at[last_coord]:
-            continue
-        else:
-            best_at[last_coord] = cost
-
         if last_coord == end:
             return cost
+        elif last_coord in seen:
+            continue
+        else:
+            seen.add(last_coord)
 
         for cand in support.adjacent_4(*last_coord):
             if cand in coords:

@@ -118,10 +118,10 @@ $ find -maxdepth 1 -type d -name 'day*' -not -name day00 | sort | xargs --replac
 > 6875 μs
 + python day15/part1.py day15/input.txt
 621
-> 99360 μs
+> 97837 μs
 + python day15/part2.py day15/input.txt
 2904
-> 3904 ms
+> 3439 ms
 + python day16/part1.py day16/input.txt
 906
 > 2082 μs
@@ -166,5 +166,8 @@ $ find -maxdepth 1 -type d -name 'day*' -not -name day00 | sort | xargs --replac
 > 1679 ms
 + python day23/part1.py day23/input.txt
 14348
-> 3582 ms
+> 192 ms
++ python day23/part2.py day23/input.txt
+40954
+> 6154 ms
 ```
