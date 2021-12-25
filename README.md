@@ -176,4 +176,7 @@ $ find -maxdepth 1 -type d -name 'day*' -not -name day00 | sort | xargs --replac
 + python day24/part2.py day24/input.txt
 51121176121391
 > 1376 ms
++ python day25/part1.py day25/input.txt
+337
+> 10665 ms
 ```
