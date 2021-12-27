@@ -214,6 +214,9 @@ class Direction4(enum.Enum):
     DOWN = (0, 1)
     LEFT = (-1, 0)
 
+    def __init__(self, x: int, y: int) -> None:
+        self.x, self.y = x, y
+
     @property
     def _vals(self) -> tuple[Direction4, ...]:
         return tuple(type(self).__members__.values())
@@ -234,4 +237,4 @@ class Direction4(enum.Enum):
         return vals[(vals.index(self) + 2) % len(vals)]
 
     def apply(self, x: int, y: int) -> tuple[int, int]:
-        return self.value[0] + x, self.value[1] + y
+        return self.x + x, self.y + y
